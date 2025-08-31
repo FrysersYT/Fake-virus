@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Фейк вируса</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100vh;
+    position: relative;
+    background-color: #000;
+    font-family: Arial, sans-serif;
+    transition: background-color 0.05s;
+  }
+
+  .prankButton {
+    position: absolute;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.05s linear;
+  }
+
+  @keyframes shake {
+    0% { transform: translate(2px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+  }
+
+  .shake {
+    animation: shake 0.1s;
+  }
+
+  #finalMessage {
+    position: absolute;
+    font-size: 80px;
+    color: red;
+    font-weight: bold;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    text-align: center;
+    z-index: 9999;
+  }
+</style>
+</head>
+<body>
+
+<div id="finalMessage">БРАТАН! Я ВИЖУ НА КАМЕРЕ КАК ТЫ ДРОЧ*ШЬ! ПИЗДЮК МЕЛКИ 💥😈</div>
+
+<audio id="sound1" src="https://www.soundjay.com/button/sounds/button-16.mp3"></audio>
+<audio id="sound2" src="https://www.soundjay.com/button/sounds/button-09.mp3"></audio>
+<audio id="explosion" src="https://www.soundjay.com/explosion/sounds/explosion-02.mp3"></audio>
+
+<script>
+const body = document.body;
+const sounds = [document.getElementById('sound1'), document.getElementById('sound2')];
+const explosion = document.getElementById('explosion');
+const finalMessage = document.getElementById('finalMessage');
+
+function randomColor() {
+  return `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`;
+}
+
+function createButton(x, y, vx=0, vy=0) {
+  const btn = document.createElement('button');
+  btn.className = 'prankButton';
+  btn.textContent = 'ха ха ЛОХ ТЫ СКАЧАЛ ВИРУС! МАМКИН ПИЗДЮК ';
+  btn.textContent = 'ДАЛБАЕБ ХАХАХАХАХАХАХАХ ';
+  btn.style.left = (x !== undefined ? x : Math.random() * (window.innerWidth - 50)) + 'px';
+  btn.style.top = (y !== undefined ? y : Math.random() * (window.innerHeight - 30)) + 'px';
+  btn.vx = vx || (Math.random()-0.5)*15;
+  btn.vy = vy || (Math.random()-0.5)*15;
+
+  btn.addEventListener('mouseover', explode);
+  btn.addEventListener('click', explode);
+
+  body.appendChild(btn);
+}
+
+function explode(e) {
+  const btn = e.currentTarget;
+  const x = parseFloat(btn.style.left);
+  const y = parseFloat(btn.style.top);
+  explosion.play();
+  body.style.backgroundColor = randomColor();
+  body.classList.add('shake');
+  setTimeout(()=>body.classList.remove('shake'),50);
+
+  const count = Math.floor(Math.random()*5)+3;
+  for(let i=0;i<count;i++){
+    const angle = Math.random()*2*Math.PI;
+    const speed = Math.random()*20+5;
+    createButton(x, y, Math.cos(angle)*speed, Math.sin(angle)*speed);
+  }
+
+  btn.remove();
+}
+
+function moveButtons() {
+  const buttons = document.querySelectorAll('.prankButton');
+  buttons.forEach(btn => {
+    let x = parseFloat(btn.style.left);
+    let y = parseFloat(btn.style.top);
+
+    x += btn.vx;
+    y += btn.vy;
+
+    if (x < 0 || x > window.innerWidth - btn.offsetWidth) btn.vx *= -1;
+    if (y < 0 || y > window.innerHeight - btn.offsetHeight) btn.vy *= -1;
+
+    btn.style.left = x + 'px';
+    btn.style.top = y + 'px';
+  });
+  requestAnimationFrame(moveButtons);
+}
+
+// создаём начальные 10 кнопок
+for(let i=0;i<10;i++) createButton();
+
+// каждые 1.5 секунды создаём новые кнопки
+setInterval(() => {
+  const count = Math.floor(Math.random()*5)+2;
+  for(let i=0;i<count;i++) createButton();
+},1500);
+
+// фон дрожит и мигает каждые 0.1 сек
+setInterval(()=>{
+  body.style.backgroundColor=randomColor();
+  body.classList.add('shake');
+  setTimeout(()=>body.classList.remove('shake'),50);
+},100);
+
+// финальное сообщение через 15 секунд
+setTimeout(()=>{ finalMessage.style.display='block'; },15000);
+
+moveButtons();
+</script>
+
+</body>
+</html>
